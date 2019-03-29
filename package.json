@@ -3,7 +3,10 @@
   "bugs": {
     "url": "https://github.com/dbpiper/slack-notify-status/issues"
   },
-  "dependencies": {},
+  "dependencies": {
+    "moment": "^2.24.0",
+    "slack-notify": "^0.1.7"
+  },
   "description": "A module to send a slack message to a channel after a verification script is finished running.",
   "devDependencies": {
     "@babel/cli": "^7.2.3",
