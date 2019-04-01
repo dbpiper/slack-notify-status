@@ -17,5 +17,6 @@
   ],
   "ignore": [
     "**/__tests__/*"
-  ]
+  ],
+  "retainLines": true
 }

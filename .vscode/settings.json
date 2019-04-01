@@ -26,7 +26,8 @@
         "tsconfig.json"
       ],
       "url": "http://json.schemastore.org/tsconfig"
-    }
+    },
+
   ],
   "prettier.requireConfig": true,
   "prettier.tslintIntegration": true,
@@ -37,5 +38,5 @@
     "http://json.schemastore.org/prettierrc": "/.prettierrc.yml"
   },
   "yaml.validate": true,
-  "eslint.enable": false
+  "eslint.enable": true
 }

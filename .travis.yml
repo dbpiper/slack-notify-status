@@ -4,6 +4,13 @@ language: node_js
 env: NODE_ENV=development
 node_js:
   - lts/*
+notifications:
+  slack:
+    rooms:
+      - secure: G2xMNdzax77TJ37oEarV+x++9ehpJn0C+OahOsApOMROAeIdguCrc5Na9ZDD4ECCDZ6rIhroyQ4SnclhmgGsYyR9qxjl0grMA8hR8kO6ra7GdaePeN5K40NNz8ldrgKSQXZzds20IQC80Ca4WYVLgizGJOIzIUZZKbVCAfzC1/vhkc5e4S9g+6YABg76d3BgXNaWDXe3AKuhm66yGTYpd1/a1mKzeVxQGXyBmZqlDMx7LneiRX5EXDiyxA0oVN3JaMJED5exCQAv08iaQbI0yB45WRS4aaFgSfyoW3sLd01W7XYUJTX9v9Pw9/fV51v90JoVIIgrraRqUP32kkkir8i/sgHfIsNlEE4sIb3DaPV+DZbln9AVYc4oTAb4EP4QMN3DhNlWaCj3RyLMiiq4r1QtJXFkBfCvajU0pKAXyDy3TFr8JBUzZsbycScB6mzfOTH8t/WkqoZhF7f1b8vPc8d3STcecwVVhapXgo3WYmK47I2jL1Mh/5GLBT88karng44es6AxUMpq6SQZat+sjusaeVG3GcF+cnAQR9ioTNJnufM0Clw1mQn/3UAzxGtqspzuCE8A9C0vQfM7JHUxU1LnSAkgGfXouLeEbTR01P3FANYoZQCTxYU4E6UdrG7KgLcTHUaqg0mis67/C5EcC7FSJNa7xrffYpjGarVTqug=
+    on_success: always
+    on_failure: always
+    on_pull_requests: true
 cache:
   directories:
     - '$HOME/.npm'

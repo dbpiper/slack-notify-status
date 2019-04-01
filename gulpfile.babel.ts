@@ -49,9 +49,19 @@ const _gitStatusHumanReview = series(_gitStatus, _sleepForReview);
 // Tasks
 // -----------------------------------------------------------------------------
 
+const generateReadmeDocs = () =>
+  terminalSpawn(
+    'npx jsdoc2md -t jsdoc2md/README.hbs -c jsdoc.json src/slack-notify-status.ts > README.md --no-gfm',
+  ).promise;
+
+const _generateRawDocs = () =>
+  terminalSpawn(
+    'npx jsdoc2md -c jsdoc.json src/slack-notify-status.ts > api.md --no-gfm',
+  ).promise;
+
 const lint = series(_lintTS, _checkTypes);
 
-const build = series(_buildJs, _buildTypes);
+const build = series(_buildJs, _buildTypes, generateReadmeDocs);
 
 const test = series(build, _runTest);
 
@@ -59,4 +69,4 @@ const verify = series(_gitStatusHumanReview, build, lint, test);
 
 const verifyCi = verify;
 
-export { lint, build, test, verify, verifyCi};
+export { lint, build, test, verify, verifyCi, generateReadmeDocs };
