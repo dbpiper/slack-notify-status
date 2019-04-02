@@ -4,15 +4,22 @@
 import moment from 'moment';
 import slackNotify from 'slack-notify';
 
-import SlackInfo from './config/gulp/helpers/slack-info';
-
-/**
- * @interface FormattedDuration
- */
 export interface FormattedDuration {
   milliseconds: number;
   seconds: number;
   minutes: number;
+}
+
+type GetMessageFunction = () => string;
+type Message = string | GetMessageFunction;
+
+export interface SlackNotifyStatusOptions {
+  slackUrl: string;
+  slackChannel: string;
+  successMessage?: Message;
+  failureMessage?: Message;
+  includeTime?: boolean;
+  scriptName?: string;
 }
 
 /**
@@ -87,19 +94,49 @@ export class SlackNotifyStatus {
     };
   };
 
-  private _startTime!: moment.Moment;
+  private static _isError = (
+    error: string | undefined | Error,
+  ): error is Error => error instanceof Error;
 
-  constructor() {
+  private static _isString = (message: Message): message is string =>
+    typeof message === 'string';
+
+  private static _isBoolean = (
+    booleanLike: boolean | undefined,
+  ): booleanLike is boolean => typeof booleanLike === 'boolean';
+
+  private _startTime!: moment.Moment;
+  private _options: SlackNotifyStatusOptions;
+
+  /**
+   * Creates an instance of SlackNotifyStatus.
+   * @param {SlackNotifyStatusOptions} options The options to use to configure
+   * SlackNotifyStatus, basically these are used to setup the slack endpoint
+   * and messaging options.
+   * @memberof SlackNotifyStatus
+   */
+  constructor(options: SlackNotifyStatusOptions) {
+    const defaultOptions: Partial<SlackNotifyStatusOptions> = {
+      includeTime: true,
+      scriptName: 'Verification',
+    };
+    const combinedOptions = {
+      ...defaultOptions,
+      ...options,
+    };
     // give it a default start time, however this really should be done
     // by the user in their own code. Having this here though means that
     // it will at least be somewhat close to correct even without the user
     // doing anything.
     this.startTimer();
+    this._options = combinedOptions;
   }
   /**
    *
    * @function
-   * @param {boolean} [success=true]
+   * @param {boolean} [success=true] Indicates whether or not to send slack the
+   * success message, if it is not Truthy then then the failure message will
+   * be send to slack instead.
    * @param {boolean} [mock=false] Indicates whether or not the method actually
    * sends a real message to slack. This is disabled by default, since the whole
    * point of the module is to send slack messages, however if you are using
@@ -108,46 +145,144 @@ export class SlackNotifyStatus {
    * to turn it off until you have finished debugging.
    */
   public slackSendMessage = (success: boolean = true, mock: boolean = false) =>
-    new Promise((resolve, _reject) => {
+    new Promise((resolve, reject) => {
       if (!mock) {
-        const message = this._getSlackMessage(success);
+        const message = this.getSlackMessageLazy(success);
 
-        this._slackSendMessageNetwork(resolve, message);
+        this._slackSendMessageNetwork(resolve, reject, message);
+      } else {
+        resolve('mocked slack send message');
       }
     });
 
   public startTimer = () => {
     this._startTime = moment();
   };
-  private _slackSendMessageNetwork = (resolve: () => void, message: string) => {
-    const _slack = slackNotify(SlackInfo.url);
+
+  /**
+   * Gets the amount of time that has elapsed since the
+   * `slackNotifyStatus.startTimer` function was called. In other words,
+   * how long a task has taken to complete.
+   *
+   *
+   * @returns The elapsed time in milliseconds.
+   * @function
+   * @memberof SlackNotifyStatus
+   */
+  public getElapsedTime = () => {
+    const endTime = moment();
+
+    return endTime.diff(this._startTime);
+  };
+
+  /**
+   * Gets the slack message which will be sent after applying all of the
+   * options which were used to initialize and configure the
+   * SlackNotifyStatus instance object.
+   *
+   * Strict version, which means that it will evaluate the Message. Meaning,
+   * that if it is of type GetMessageFunction instead of string, then the
+   * GetMessageFunction function will be called. Thus, evaluating the
+   * GetMessageFunction to a raw string.
+   *
+   * @returns The slack message which will be sent.
+   * @function
+   * @memberof SlackNotifyStatus
+   */
+  public getSlackMessageStrict = (success: boolean = true): string => {
+    const timeTakenString = SlackNotifyStatus.getTimeTakenString(
+      this.getElapsedTime(),
+    );
+
+    if (SlackNotifyStatus._isBoolean(success)) {
+      if (success) {
+        return this._evaluateMessage(this._getSuccessMessage(timeTakenString));
+      }
+
+      return this._evaluateMessage(this._getFailureMessage(timeTakenString));
+    }
+
+    // this can't be reached with typescript, however it **is** possible
+    // without typechecking (in vanilla JS).
+    return this._evaluateMessage(this._getFailureMessage(timeTakenString));
+  };
+
+  /**
+   * Gets the slack message which will be sent after applying all of the
+   * options which were used to initialize and configure the
+   * SlackNotifyStatus instance object.
+   *
+   * Lazy version, which means that it **won't** evaluate the Message
+   * if it is a GetMessageFunction instead of a string.
+   *
+   * @returns The slack message which will be sent.
+   * @function
+   * @memberof SlackNotifyStatus
+   */
+  public getSlackMessageLazy = (success: boolean = true): string => {
+    const timeTakenString = SlackNotifyStatus.getTimeTakenString(
+      this.getElapsedTime(),
+    );
+
+    if (SlackNotifyStatus._isBoolean(success)) {
+      if (success) {
+        return this._evaluateMessage(this._getSuccessMessage(timeTakenString));
+      }
+
+      return this._evaluateMessage(this._getFailureMessage(timeTakenString));
+    }
+
+    // this can't be reached with typescript, however it **is** possible
+    // without typechecking (in vanilla JS).
+    return this._evaluateMessage(this._getFailureMessage(timeTakenString));
+  };
+
+  private _evaluateMessage = (messageLike: string | GetMessageFunction) => {
+    if (SlackNotifyStatus._isString(messageLike)) {
+      return messageLike;
+    }
+
+    return messageLike();
+  };
+
+  private _slackSendMessageNetwork = (
+    resolve: (message: string) => void,
+    reject: (error: Error) => void,
+    messageLike: string | GetMessageFunction,
+  ) => {
+    const _slack = slackNotify(this._options.slackUrl);
+    const rawMessage = this._evaluateMessage(messageLike);
     _slack.send(
       {
-        channel: SlackInfo.channel,
-        text: message,
+        channel: this._options.slackChannel,
+        text: rawMessage,
       },
-      () => {
-        resolve();
+      (error: undefined | string | Error) => {
+        if (SlackNotifyStatus._isError(error)) {
+          reject(error);
+        } else {
+          resolve('slack message sent successfully!');
+        }
       },
     );
   };
-  private _getSlackMessage = (success: boolean) => {
-    const _endTime = moment();
 
-    let message: string = '';
-
-    const timeTakenMs = _endTime.diff(this._startTime);
-    const timeTakenString = SlackNotifyStatus.getTimeTakenString(timeTakenMs);
-
-    if (typeof success === 'boolean') {
-      if (success) {
-        message = `Verification script finished successfully in ${timeTakenString}.`;
-      } else {
-        message = `Verification script failed after ${timeTakenString}!`;
-      }
+  private _getSuccessMessage = (timeTaken: string) => {
+    if (this._options.successMessage) {
+      return this._options.successMessage;
     }
 
-    return message;
+    return `${
+      this._options.scriptName
+    } script finished successfully in ${timeTaken}.`;
+  };
+
+  private _getFailureMessage = (timeTaken: string) => {
+    if (this._options.failureMessage) {
+      return this._options.failureMessage;
+    }
+
+    return `${this._options.scriptName} script failed after ${timeTaken}!`;
   };
 }
 

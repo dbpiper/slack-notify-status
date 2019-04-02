@@ -54,7 +54,7 @@ const generateReadmeDocs = () =>
     'npx jsdoc2md -t jsdoc2md/README.hbs -c jsdoc.json src/slack-notify-status.ts > README.md --no-gfm',
   ).promise;
 
-const _generateRawDocs = () =>
+const generateRawDocs = () =>
   terminalSpawn(
     'npx jsdoc2md -c jsdoc.json src/slack-notify-status.ts > api.md --no-gfm',
   ).promise;
@@ -69,4 +69,12 @@ const verify = series(_gitStatusHumanReview, build, lint, test);
 
 const verifyCi = verify;
 
-export { lint, build, test, verify, verifyCi, generateReadmeDocs };
+export {
+  lint,
+  build,
+  test,
+  verify,
+  verifyCi,
+  generateReadmeDocs,
+  generateRawDocs,
+};
