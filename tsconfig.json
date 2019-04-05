@@ -43,6 +43,6 @@
     "**/__tests__"
   ],
   "include": [
-    "src",
+    "src"
   ]
 }
