@@ -12,9 +12,6 @@ finished running.
     * _static_
         * [.exports.SlackNotifyStatus](#SlackNotifyStatus.exports.SlackNotifyStatus)
             * [new exports.SlackNotifyStatus(options)](#new_SlackNotifyStatus.exports.SlackNotifyStatus_new)
-        * [.getElapsedTime()](#SlackNotifyStatus.getElapsedTime) ⇒
-        * [.getSlackMessageStrict()](#SlackNotifyStatus.getSlackMessageStrict) ⇒
-        * [.getSlackMessageLazy()](#SlackNotifyStatus.getSlackMessageLazy) ⇒
 
 <a name="SlackNotifyStatus+slackSendMessage"></a>
 
@@ -67,38 +64,3 @@ and messaging options.</p>
     </tr>  </tbody>
 </table>
 
-<a name="SlackNotifyStatus.getElapsedTime"></a>
-
-### SlackNotifyStatus.getElapsedTime() ⇒
-Gets the amount of time that has elapsed since the
-`slackNotifyStatus.startTimer` function was called. In other words,
-how long a task has taken to complete.
-
-**Kind**: static method of [<code>SlackNotifyStatus</code>](#SlackNotifyStatus)  
-**Returns**: The elapsed time in milliseconds.  
-<a name="SlackNotifyStatus.getSlackMessageStrict"></a>
-
-### SlackNotifyStatus.getSlackMessageStrict() ⇒
-Gets the slack message which will be sent after applying all of the
-options which were used to initialize and configure the
-SlackNotifyStatus instance object.
-
-Strict version, which means that it will evaluate the Message. Meaning,
-that if it is of type GetMessageFunction instead of string, then the
-GetMessageFunction function will be called. Thus, evaluating the
-GetMessageFunction to a raw string.
-
-**Kind**: static method of [<code>SlackNotifyStatus</code>](#SlackNotifyStatus)  
-**Returns**: The slack message which will be sent.  
-<a name="SlackNotifyStatus.getSlackMessageLazy"></a>
-
-### SlackNotifyStatus.getSlackMessageLazy() ⇒
-Gets the slack message which will be sent after applying all of the
-options which were used to initialize and configure the
-SlackNotifyStatus instance object.
-
-Lazy version, which means that it **won't** evaluate the Message
-if it is a GetMessageFunction instead of a string.
-
-**Kind**: static method of [<code>SlackNotifyStatus</code>](#SlackNotifyStatus)  
-**Returns**: The slack message which will be sent.  

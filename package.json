@@ -4,13 +4,14 @@
     "url": "https://github.com/dbpiper/slack-notify-status/issues"
   },
   "dependencies": {
-    "moment": "^2.24.0",
+    "@dbpiper/timer": "^1.0.0-beta.2",
     "slack-notify": "^0.1.7"
   },
   "description": "A module to send a slack message to a channel after a verification script is finished running.",
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.4.0",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
     "@babel/preset-env": "^7.4.2",
     "@babel/preset-typescript": "^7.3.3",
     "@babel/register": "^7.4.0",
@@ -70,11 +71,14 @@
   ],
   "license": "MIT",
   "main": "lib/slack-notify-status.js",
-  "name": "gulp-errorable",
+  "name": "@dbpiper/slack-notify-status",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dbpiper/slack-notify-status.git"
   },
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "npx gulp build",
     "lint": "npx gulp lint",
