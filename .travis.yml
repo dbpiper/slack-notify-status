@@ -1,17 +1,25 @@
 os: linux
 dist: xenial
 language: node_js
-# can't set this to production, because we don't want to add all of the
-# testing dependencies
 env: NODE_ENV=development
 node_js:
-  - "lts/*"
+  - lts/*
+notifications:
+  slack:
+    rooms:
+      - secure: G2xMNdzax77TJ37oEarV+x++9ehpJn0C+OahOsApOMROAeIdguCrc5Na9ZDD4ECCDZ6rIhroyQ4SnclhmgGsYyR9qxjl0grMA8hR8kO6ra7GdaePeN5K40NNz8ldrgKSQXZzds20IQC80Ca4WYVLgizGJOIzIUZZKbVCAfzC1/vhkc5e4S9g+6YABg76d3BgXNaWDXe3AKuhm66yGTYpd1/a1mKzeVxQGXyBmZqlDMx7LneiRX5EXDiyxA0oVN3JaMJED5exCQAv08iaQbI0yB45WRS4aaFgSfyoW3sLd01W7XYUJTX9v9Pw9/fV51v90JoVIIgrraRqUP32kkkir8i/sgHfIsNlEE4sIb3DaPV+DZbln9AVYc4oTAb4EP4QMN3DhNlWaCj3RyLMiiq4r1QtJXFkBfCvajU0pKAXyDy3TFr8JBUzZsbycScB6mzfOTH8t/WkqoZhF7f1b8vPc8d3STcecwVVhapXgo3WYmK47I2jL1Mh/5GLBT88karng44es6AxUMpq6SQZat+sjusaeVG3GcF+cnAQR9ioTNJnufM0Clw1mQn/3UAzxGtqspzuCE8A9C0vQfM7JHUxU1LnSAkgGfXouLeEbTR01P3FANYoZQCTxYU4E6UdrG7KgLcTHUaqg0mis67/C5EcC7FSJNa7xrffYpjGarVTqug=
+    on_success: always
+    on_failure: always
+    on_pull_requests: true
 cache:
-  # cache for ci, since it deletes node_modules
   directories:
-    - "$HOME/.npm"
+    - '$HOME/.npm'
+before_install:
+  - openssl aes-256-cbc -K $encrypted_4b4244bfbb7a_key -iv $encrypted_4b4244bfbb7a_iv
+    -in travis.key.enc -out travis.key -d
+  - sudo apt-get update
+  - sudo apt-get install git-crypt
+  - git-crypt unlock travis.key
 install:
   - npm ci
-  - npm link
-  - npm link gulp-errorable
 script: npm run verifyCi

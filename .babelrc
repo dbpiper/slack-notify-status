@@ -15,7 +15,11 @@
       }
     ]
   ],
+  "plugins": [
+    "@babel/proposal-class-properties"
+  ],
   "ignore": [
     "**/__tests__/*"
-  ]
+  ],
+  "retainLines": true
 }
