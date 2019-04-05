@@ -12,7 +12,7 @@ import terminalSpawn from 'terminal-spawn';
 const _runTest = () => terminalSpawn('npx jest --passWithNoTests').promise;
 
 const _buildJs = () =>
-  terminalSpawn(`npx babel src --out-dir lib --extensions ".ts"`).promise;
+  terminalSpawn(`npx babel src --out-dir lib --extensions ".ts" --delete-dir-on-start`).promise;
 
 const _buildTypes = () => terminalSpawn('npx tsc').promise;
 
@@ -49,19 +49,9 @@ const _gitStatusHumanReview = series(_gitStatus, _sleepForReview);
 // Tasks
 // -----------------------------------------------------------------------------
 
-const generateReadmeDocs = () =>
-  terminalSpawn(
-    'npx jsdoc2md -t jsdoc2md/README.hbs -c jsdoc.json src/slack-notify-status.ts > README.md --no-gfm',
-  ).promise;
-
-const generateRawDocs = () =>
-  terminalSpawn(
-    'npx jsdoc2md -c jsdoc.json src/slack-notify-status.ts > api.md --no-gfm',
-  ).promise;
-
 const lint = series(_lintTS, _checkTypes);
 
-const build = series(_buildJs, _buildTypes, generateReadmeDocs);
+const build = series(_buildJs, _buildTypes);
 
 const test = series(build, _runTest);
 
@@ -69,12 +59,4 @@ const verify = series(_gitStatusHumanReview, build, lint, test);
 
 const verifyCi = verify;
 
-export {
-  lint,
-  build,
-  test,
-  verify,
-  verifyCi,
-  generateReadmeDocs,
-  generateRawDocs,
-};
+export { lint, build, test, verify, verifyCi };

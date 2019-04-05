@@ -103,7 +103,7 @@ export class SlackNotifyStatus {
       },
       (error: undefined | string | Error) => {
         if (SlackNotifyStatus.isError(error)) {
-          reject(new Error(`error:${error} sending message: ${message}`));
+          reject(new Error(`${error}`));
         } else {
           resolve(`message:${message} sent successfully!`);
         }

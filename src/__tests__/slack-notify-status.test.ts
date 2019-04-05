@@ -49,6 +49,22 @@ describe('slackNotifyStatus instance tests', () => {
       );
     });
 
+    test('slack post message success test using default parameters', async () => {
+      const slackNotifyStatus = new SlackNotifyStatus({
+        slackUrl: 'hello',
+        slackChannel: 'hello',
+      });
+
+      const timeout = promisify(setTimeout);
+      await timeout(1000);
+
+      const result = await slackNotifyStatus.slackSendMessage();
+      const unchangingResult = unchangingPartOfMessage(result.toString());
+      expect(unchangingResult).toBe(
+        'message:Verification script finished successfully',
+      );
+    });
+
     test('slack post message success test with mocking enabled', async () => {
       const slackNotifyStatus = new SlackNotifyStatus({
         slackUrl: 'hello',
