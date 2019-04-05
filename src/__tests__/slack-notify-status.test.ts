@@ -3,7 +3,7 @@
 import _ from 'lodash';
 import { CoreOptions } from 'request';
 import { promisify } from 'util';
-// import { unchangingPartOfDefaultMessage } from './utils/message';
+import { unchangingPartOfMessage } from './utils/message';
 
 jest.mock('request', () => {
   const moduleObject = {
@@ -43,7 +43,10 @@ describe('slackNotifyStatus instance tests', () => {
       await timeout(1000);
 
       const result = await slackNotifyStatus.slackSendMessage(true, false);
-      expect(typeof result).toBe('string');
+      const unchangingResult = unchangingPartOfMessage(result.toString());
+      expect(unchangingResult).toBe(
+        'message:Verification script finished successfully',
+      );
     });
 
     test('slack post message success test with mocking enabled', async () => {
@@ -56,7 +59,7 @@ describe('slackNotifyStatus instance tests', () => {
       await timeout(1000);
 
       const result = await slackNotifyStatus.slackSendMessage(true, true);
-      expect(typeof result).toBe('string');
+      expect(result).toBe('mocked slack send message');
     });
 
     test('slack post message success test with failure message', async () => {
@@ -69,7 +72,8 @@ describe('slackNotifyStatus instance tests', () => {
       await timeout(1000);
 
       const result = await slackNotifyStatus.slackSendMessage(false, false);
-      expect(typeof result).toBe('string');
+      const unchangingResult = unchangingPartOfMessage(result.toString());
+      expect(unchangingResult).toBe('message:Verification script failed');
     });
 
     test('slack post message failed test', async () => {

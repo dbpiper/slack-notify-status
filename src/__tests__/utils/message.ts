@@ -1,10 +1,10 @@
 import _ from 'lodash';
 
-const unchangingPartOfDefaultMessage = (message: string) => {
+const unchangingPartOfMessage = (message: string) => {
   const messageWords = message.split(' ');
   // the last important part of the string which was not part of the time
   const statusIndex = _.findIndex(messageWords, (word: string) => {
-    return _.includes(word, 'success') || _.includes(word, 'failure');
+    return _.includes(word, 'succ') || _.includes(word, 'fail');
   });
   const indices = [...messageWords.keys()];
   const unchangingMessageWordIndices = _.first(
@@ -20,4 +20,4 @@ const unchangingPartOfDefaultMessage = (message: string) => {
   return unchangingMessagePart;
 };
 
-export { unchangingPartOfDefaultMessage };
+export { unchangingPartOfMessage };

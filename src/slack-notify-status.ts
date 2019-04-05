@@ -46,7 +46,6 @@ export class SlackNotifyStatus {
   }
   /**
    *
-   * @function
    * @param {boolean} [success=true] Indicates whether or not to send slack the
    * success message, if it is not Truthy then then the failure message will
    * be send to slack instead.
@@ -57,7 +56,10 @@ export class SlackNotifyStatus {
    * debugging to get tons of slack messages all day. In this case, you may want
    * to turn it off until you have finished debugging.
    */
-  public slackSendMessage(success: boolean = true, mock: boolean = false) {
+  public slackSendMessage(
+    success: boolean = true,
+    mock: boolean = false,
+  ): Promise<string | Error> {
     return new Promise((resolve, reject) => {
       if (!mock) {
         const message = this.makeMessage(success);
@@ -72,7 +74,7 @@ export class SlackNotifyStatus {
   private makeMessage(success: boolean) {
     let duration = '';
 
-    if (this._options.timer) {
+    if (SlackNotifyStatus.isDefined(this._options.timer)) {
       duration = `${this._options.timer.stop()}`;
     }
 
@@ -101,9 +103,9 @@ export class SlackNotifyStatus {
       },
       (error: undefined | string | Error) => {
         if (SlackNotifyStatus.isError(error)) {
-          reject(error);
+          reject(new Error(`error:${error} sending message: ${message}`));
         } else {
-          resolve('slack message sent successfully!');
+          resolve(`message:${message} sent successfully!`);
         }
       },
     );
