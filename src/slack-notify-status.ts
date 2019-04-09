@@ -26,6 +26,16 @@ export class SlackNotifyStatus {
 
   private _options: SlackNotifyStatusOptions;
 
+  get timer(): Timer {
+    if (SlackNotifyStatus.isDefined(this._options.timer)) {
+      return this._options.timer;
+    }
+
+    // if the timer is not already created make a new one
+    this._options.timer = new Timer();
+    return this._options.timer;
+  }
+
   /**
    * Creates an instance of SlackNotifyStatus.
    * @param {SlackNotifyStatusOptions} options The options to use to configure
@@ -43,6 +53,10 @@ export class SlackNotifyStatus {
       ...options,
     };
     this._options = combinedOptions;
+
+    if (!SlackNotifyStatus.isDefined(this._options.timer)) {
+      this._options.timer = new Timer();
+    }
   }
   /**
    *
