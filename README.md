@@ -78,7 +78,10 @@ The timer you want to use to measure how long the code took to run, by default
 match the [@dbpiper/timer][@dbpiper/timer] API.
 
 The timer will start measuring from the moment that the instance object is
-created, thus it should not be created until measurement start is desired.
+created, by default. However, you may also use slackNotifyStatus.timer to get
+the instance of the timer and then you can manually start it when ready
+with timer.start. See [@dbpiper/timer][@dbpiper/timer] for more details
+on the timer API.
 
 #### SlackNotifyStatusOptions.scriptName
 
@@ -86,6 +89,16 @@ The name of the script you are sending messages on behalf of, by default this
 is 'Verification', as this is the name of my script.
 
 ---
+
+### slackNotifyStatus.timer
+
+return type: `Timer`
+
+Gets the [@dbpiper/timer][@dbpiper/timer] instance object which is being
+used to measure the time. This can then be used to start the timer manually,
+which is useful if you want to create the SlackNotifyStatus instance object
+_before_ you want to begin measuring the time taken. See
+[@dbpiper/timer][@dbpiper/timer] for more details on the timer API.
 
 ### slackNotifyStatus.slackSendMessage(success = true, mock = false)
 

@@ -1,5 +1,6 @@
 // tslint:disable: no-magic-numbers
 
+import Timer from '@dbpiper/timer';
 import _ from 'lodash';
 import { CoreOptions } from 'request';
 import { promisify } from 'util';
@@ -32,6 +33,29 @@ jest.mock('request', () => {
 import SlackNotifyStatus from '../slack-notify-status';
 
 describe('slackNotifyStatus instance tests', () => {
+  describe('slackNotifyStatus.timer tests', () => {
+    test('basic timer access', () => {
+      const slackNotifyStatus = new SlackNotifyStatus({
+        slackUrl: 'hello',
+        slackChannel: 'hello',
+      });
+
+      const timer = slackNotifyStatus.timer;
+      expect(timer instanceof Timer).toBe(true);
+    });
+
+    test('makes a timer and returns it if it was undefined', () => {
+      const slackNotifyStatus = new SlackNotifyStatus({
+        slackUrl: 'hello',
+        slackChannel: 'hello',
+        timer: undefined,
+      });
+
+      const timer = slackNotifyStatus.timer;
+      expect(timer instanceof Timer).toBe(true);
+    });
+  });
+
   describe('slackNotifyStatus.slackSendMessage tests', () => {
     test('slack post message success test', async () => {
       const slackNotifyStatus = new SlackNotifyStatus({
